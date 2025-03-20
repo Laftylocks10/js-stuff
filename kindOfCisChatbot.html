@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon", href="Pictures/cisLogo.png">
+    <title>CIS Chatbot</title>
+    <style>
+        body {
+            margin: 0
+        }
+        img {
+            display: flex;
+            position: fixed;
+            right: 1em;
+            top: 1em
+
+        }
+    </style>
+</head>
+<body> 
+    <script>
+        
+        let formclass = {
+            "7a": "Maths Room 4", "7b": "Art Room 3", "7c": "Maths Room 3", "7d": "Maths Room 5", "7e": "English Room 4", "7f": "Languages Room 4", "7g": "English Room 5",
+            "8a": "Languages Room 1", "8b": "Languages Room 2", "8c": "English Room 1","8d": "Languages Room 3", "8e": "English Room 2", "8f": "English Room 3", "8g": "Humanities Room 5",
+            "9a": "Instrument Room", "9b": "Art Room 2", "9c": "Music Room 3", "9d": "Music Room 2", "9e": "Art Room 1", "9f": "Maths Room 1",
+            "10a": "Humanities Room 2", "10b": "Humanities Room 1", "10c": "Humanities Room 3", "10d": "Humanities Room 4", "10e": "Maths Room 2",
+            "11a": "Social Science Room 1", "11b": "Social Sciences Room 2", "11c": "Social Sciences Room 3", "11d": "Social Sciences Room 4"
+        }
+        let clubvenues = {
+            "Monday": {"Textile and Creative Design": "Textile Room", "Girls' Football": "Main Field", "Basketball": "Basketball Court", "Creative Photography": "DT Room", "Animation and Mobile App Design": "ICT Laboratory 1", "STEM Olympiad": "Biology Laboratory", "VOLT Club": "Chemistry Lab 2"}, 
+            "Tuesday (ETA)": {"Model United Nations": "English Room 2", "Healthy Eating": "Science Laboratory", "Nigerian Culture and Tradition": "Humanities Room 2", "Theatre": "Drama Room", "Art and Design": "Art Room 1", "Craft": "Art Room 2", "Creative Writing": "Math Room 5", "CIS Chronicles": "Math Room 2", "IGCSE Clinic": "Examination Room", "Conde Nast": "Music Room 2", "Books! Books! Books!": "Library", "Financial Literacy": "Social Sciences Room 1", "Robotics": "STEAM Room", "Ancient Civilisation": "Art Room 3", "Change Makers": "Math Room 4", "MFL Show": "Languages Room 3"},
+            "Wednesday": {"Lawn Tennis": "Tennis Field", "Sano Chef": "Cookery Room", "Taekwondo": "Drama Room", "Table Tennis": "Main Hall", "Cheerleading Club": "Main Halp", "Fencing Club": "Junior School Main Hall"},
+            "Thursday": {"Chess Club": "Language Room 4", "Knitting and Breadmaking Club": "Music Room", "Tag Rugby": "Boarding House Field", "Boys' Football": "Main Field", "Crochet Club": "Art Room 3", "Mandarin Chinese Club": "Clay and Ceramics Room", "Karate" :"Drama Room"},
+            "Friday": {"Homework Club": "English Room 2", "Boys' Football": "Main Field", "Gymanastics": "Main Hall", "Duke of Edinburgh Award": "Social Sciences Room 4", "Mathematics Club": "Maths Room 2"}
+        }
+        let yearbasedinfo = {
+            7: ["Monday", "in the Downstairs Dining or Outside Benches"], 
+            8: ["Tuesday", "in the Upstairs Dining or Outside Benches"], 
+            9: ["Wednesday", "at the Benches outside Dining Hall"], 
+            10: ["Thursday with year 11", "at the Astrofield opposite the main hall and main field"], 
+            11: ["Thursday with year 10", "at the Astrofield opposite the main hall and main field"]
+        }
+
+        console.log("This was originally made on Python but adapted to JavaScript. Have fun with the chatbot.")
+        
+        let askChoice4 = () => {
+            document.getElementById("getChoice3").remove()
+            if ((choices.choice1=="a")==false) {Object.assign(choices, {choice3: document.querySelector('input[name="option3"]:checked').value})}
+            if (choices.choice1=="a") {
+                let form = document.getElementById("class").value
+                let index = (Object.keys(formclass)).indexOf(form)
+                content.innerHTML=
+                ["<p>Your form class is ", Object.values(formclass)[index], "</p>",
+                "<label>Press this button to restart the script</label> <br> <button onclick='location.reload()'>Restart</button>"].join("")
+            } else if (choices.choice1=="c") {
+                content.innerHTML = [
+                    `<p>The venue for this club is `, Object.values(Object.values(clubvenues)[choices.choice2])[choices.choice3], "</p>",
+                    "<label>Press this button to restart the script</label> <br> <button onclick='location.reload()'>Restart</button>"].join("")
+                
+            }
+            }
+        let askChoice3 = () => {
+            document.getElementById("getChoice2").remove()
+            Object.assign(choices, {choice2: document.querySelector('input[name="option2"]:checked').value})
+
+            if (choices.choice1=="a") {
+                if (choices.choice2=="a") {
+                    content.innerHTML = `
+                    <label id='formlabel'>Please state your form group e.g 8a, 7f</label> <br> 
+                    <input type='text' id='class' name='option3'> <button onclick='askChoice4()' id='getChoice3'>Continue</button>`
+                } else if (choices.choice2=="b") {
+                    content.innerHTML = `
+                    <p>To get to the assembly hall from the school building: Go through the front entrance, then to your right, the front gate, Go through it, then to your left will be the hall. Going forward will take you to the main Field. You have assembly on ", (Object.values(yearbasedinfo)[(Object.keys(yearbasedinfo)).indexOf(year)])[0], " and Friday (Whole School) at 9:30 to 9:55</p>
+                    <label>Press this button to restart the script</label> <br> <button onclick='location.reload()'>Restart</button>`
+                } else {
+                    content.innerHTML = `
+                    <p>You can find the Student Support Room on the old wing of the first floor.</p>
+                    <label>Press this button to restart the script</label> <br> <button onclick='location.reload()'>Restart</button>
+                    `
+                }
+            } else if (choices.choice1=="c") {
+                let clubSet = Object.keys(Object.values(clubvenues)[choices.choice2])
+                addedContent = []
+                for (clubInd in clubSet) {
+                    addedContent.push(["<label>", Object.keys(Object.values(clubvenues)[choices.choice2])[clubInd], "</label><input type='radio' name='option3' value='", clubInd, "'> <br/>"].join(""))                  
+                }
+                addedContent.push("<button onclick='askChoice4()' id='getChoice3'>Continue</button>")
+                content.innerHTML = addedContent.join("")
+            } else if (choices.choice1=="e") {
+                if (choices.choice2=="a") {
+                    content.innerHTML = `
+                    <input type='radio' name='option2' value='a'> <label>Science</label> <br/>
+                    <input type='radio' name='option2' value='b'> <label>Mathematics</label> <br/>
+                    <input type='radio' name='option2' value='c'> <label>English</label> <br/>
+                    <button onclick='askChoice4()' id='getChoice3'>Continue</button>`
+                } else if (choices.choice2=="b") {
+                    content.innerHTML = `
+                    <input type='radio' name='option2' value='a'> <label>MFL - Spanish and French</label> <br/>
+                    <input type='radio' name='option2' value='b'> <label></label> <br/>
+                    <input type='radio' name='option2' value='c'> <label>English</label> <br/>
+                    <button onclick='askChoice4()' id='getChoice3'>Continue</button>`
+                } 
+            }
+        }
+        let askChoice2 = () => {
+            document.getElementById("getChoice1").remove()
+
+            choices = {
+                choice1: document.querySelector('input[name="option1"]:checked').value
+            }
+            
+            if (choices.choice1=="a") {
+                content.innerHTML = `<input type='radio' name='option2' value='a'> <label>Where can I find my form room</label> <br/>
+                <input type='radio' name='option2' value='b'> <label>Where can I find the assembly hall or main field?</label> <br/>
+                <input type='radio' name='option2' value='c'> <label>Where can I find the Student Support Room?</label> <br/>
+                <button onclick='askChoice3()' id='getChoice2'>Continue</button>`
+            } else if (choices.choice1=="b") {
+                if (year==7) {window.location.href = "https://docs.google.com/document/d/1jKAKhW3Cllclb4Eqsvi1qBrntZSg_Fn2uHjodzenUYs/edit?tab=t.0"}
+                else if (year==8) {window.location.href = ""}
+            } else if (choices.choice1=="c") {
+                addedContent = []
+                for (day in Object.keys(clubvenues)) {
+                    addedContent.push(["<label>", Object.keys(clubvenues)[day],"</label><input type='radio' name='option2' value='", day, "'> <br>"].join(""))                                                             
+                }
+                addedContent.push("<button onclick='askChoice3()' id='getChoice2'>Continue</button>")
+                addedContent = addedContent.join(" ")
+                content.innerHTML = addedContent
+            } else if(choices.choice1=="d") {  
+                content.innerHTML = `     
+                <input type='radio' name='option2' value='a'> <label>Where can I find the assembly hall or main field?</label> <br/>
+                <input type='radio' name='option2' value='b'> <label>Where can I find the Student Support Room?</label> <br/>
+                <button onclick='askChoice3()' id='getChoice2'>Continue</button> `
+            } else {
+                content.innerHTML = `
+                <input type='radio' name='option2' value='a'> <label>Core Subjects</label> <br/>
+                <input type='radio' name='option2' value='b'> <label>Other Subjects</label> <br/>
+                <input type='radio' name='option2' value='c'> <label>Teachers</label> <br/>
+                <input type='radio' name='option2' value='d'> <label>Other Staff</label> <br/>
+                <button onclick='askChoice3()' id='getChoice2'>Continue</button>
+                `
+            }
+            
+        }
+            
+            
+        
+
+        let askChoice1 = () => {
+            (document.getElementById("myHeader")).innerText = "Welcome, what do you need?"
+            document.getElementById("getYearButton").remove()
+            year = document.querySelector('input[name="year"]:checked').value
+            content.innerHTML = `
+            <input type='radio' name='option1' value='a'> <label>Where can I find...</label> <br/>
+            <input type='radio' name='option1' value='b'> <label>Year Group Timetable [UNAVAILABLE]</label> <br/>
+            <input type='radio' name='option1' value='c'> <label>Club Venues</label> <br/>
+            <input type='radio' name='option1' value='d'> <label>House-related Activities [UNAVAILABLE]</label> <br/>
+            <input type='radio' name='option1' value='e'> <label>Subjects and Teachers [UNAVAILABLE]</label> <br/>
+
+            <button onclick='askChoice2()' id='getChoice1'>Continue</button>`
+            
+        }
+
+        let askYear = () => { 
+            
+            content.innerHTML= `
+            <label>Please choose your year group</label> <br>
+
+            <input type='radio' name='year' value='7'> <label>I am a year 7</label> <br/>
+            <input type='radio' name='year' value='8'> <label>I am a year 8</label> <br/>
+            <input type='radio' name='year' value='9'> <label>I am a year 9</label> <br/>
+            <input type='radio' name='year' value='10'> <label>I am a year 10</label> <br/>
+            <input type='radio' name='year' value='11'> <label>I am a year 11</label> <br/>
+
+            <button onclick='askChoice1()' id='getYearButton'>Continue</button>
+            `
+        }
+    </script>
+    <header id ="myHeader"></header>
+    <article id="myContents"></article>
+    <img src="Pictures/cisLogo.png" alt="CIS Logo" id="CISImg">
+    <script>
+        content = document.getElementById("myContents")
+        let img = document.getElementById("CISImg")
+        img.onload = function() {
+        img.width = (img.naturalWidth/10)*2
+        img.height = (img.naturalHeight/10)*2
+    }
+        askYear()
+    </script>
+    
+</body>
+</html>

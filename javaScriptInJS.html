@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build Your Website!</title>
+    <style>
+        #codecontainer {
+            position: fixed;
+            right: 1em;
+            top: 1em;
+            text-align: center;
+            border: 1px solid black;
+            padding: 10px;
+            width: 30%
+        }
+        #codecontainer textarea {
+            width: 95%;
+            height: 100px
+        }
+        #containerbtn {
+            margin-bottom: 1em;
+        }
+        #jserr {
+            padding: 5px 0px;
+            color: red
+        }
+    </style>
+</head>
+<body>
+    <script>
+        
+        function addHTML () {
+            document.getElementById("section").insertAdjacentHTML("beforeend", document.getElementById("htmlcode").value)
+        }
+        function addJS () {
+            errHappened = true
+            try {eval(document.getElementById("jscode").value)}
+            catch (err) {document.getElementById("jserr").innerText = err.name + ": " + err.message; errHappened = false}
+            if (errHappened) {document.getElementById("jserr").innerText = ""}
+        }
+        function callElements () {
+            document.getElementById("fordelete").remove()
+            document.getElementById("jscode").value = `head = document.head
+body = document.body
+section = document.getElementById("section")
+container = document.getElementById("codecontainer")
+// Section is where HTML goes. 
+            `
+        }
+    </script>
+    <aside id="codecontainer">
+        <div id="header">Your code goes here! (The container's id is "codecontainer")</div> <br/>
+        <div id="htmlcontainer">
+            <div>Add some lines of HTML here!</div>
+            <textarea id="htmlcode"><p>Hello World</p></textarea> <br/>
+            <button onclick="addHTML()" id="containerbtn">Add HTML</button> <button onclick="document.getElementById('section').innerHTML=''">Reset</button> <br>  
+        </div>
+        <div id="jscontainer">
+            <div id="jsheader">Write JavaScript here!</div> <br/>
+            <textarea id="jscode">console.log("Hello World!")</textarea> <br/>
+            <div id="jserr"></div>
+            <button onclick="addJS()" id="containerbtn">Add JavaScript</button> <br>  
+            <button onclick="callElements()" id="fordelete">Call HTML Elements</button>
+        </div>
+    </aside>
+    <section id="section">Please do not delete me! HTML goes here. ID is "section"</section>
+    
+</body>
+</html>

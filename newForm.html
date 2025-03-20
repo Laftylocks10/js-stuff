@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>myForm</title>
+    <link rel="stylesheet" href="../CSS/newStyling.css"/>
+</head>
+<body>
+    <div class="container">
+        <div class="leftdiv">
+            <img src="../Pictures/wow.jpg" alt="formimage" class="formimage">
+        </div>
+        <div class="rightdiv">
+           <div class="mainText"> Create Account</div>
+           <div class="iconHolder">
+            <div class="fbHolder">
+                <img src="../Pictures/fb.png" class="fb"/> 
+            </div>
+            <div class="fbHolder">
+                <img src="../Pictures/google.png" class="fb"/> 
+            </div>
+            <div class="fbHolder">
+                <img src="../Pictures/linkedin.png" class="fb"/> 
+            </div>
+           </div>
+           <div class="smallText">or use your email account</div>
+           <form class="frm" id="signUpForm">
+            <div class="inputHolder">
+                <input placeholder="Enter your username"  id="username" name="username" type="text"/>
+                <div class="nameDetails" id="details"></div>
+                <div id="usernameErr" class="err"></div>
+            </div>
+            <div class="inputHolder">
+                <input placeholder="Enter your email"  id="email" name="email" type="email"/>
+                <div class="emailDetails" id="details"></div>
+                <div id="emailErr" class="err"></div>
+            </div>
+            <div class="inputHolder">
+                <input placeholder="Enter your password"  id="password" name="password" type="password"/>
+                <div class="passDetails" id="details"></div>
+                <div id="passwordErr" class="err"></div>
+            </div>
+            <button class="btn" type="submit">Submit</button>
+           </form>
+        </div>
+    </div>
+    <script>
+        function myFunction(){
+           let name =  document.getElementById("username").value.trim()
+           let email = document.getElementById("email").value.trim()
+           let password = document.getElementById("password").value.trim()
+           const regex = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/
+
+           if(name.length < 3){
+            document.getElementById("nameDetails").innerText = "characters shouldn't be less than 3(${name.length})"
+           }else if(email.match(regex)){
+            document.getElementById("emailDetails").innerText = "e.g hello@gmail.com"
+           }else if(password.length < 5){
+            document.getElementById("passDetails").innerText = "password is too weak"
+           }
+        }
+
+        document.getElementById("signUpForm").addEventListener("submit",function(event){
+            event.preventDefault()
+            let valid = true
+            let regex = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/
+
+         document.getElementById("usernameErr").innerText = ""
+         document.getElementById("emailErr").innerText = ""
+         document.getElementById("passwordErr").innerText = ""
+
+         let name = document.getElementById("username").value.trim()
+         let email = document.getElementById("email").value.trim()
+         let password = document.getElementById("password").value.trim()
+
+         if(name === ""){
+            document.getElementById("usernameErr").innerText = "field is required"
+            valid = false
+         }else if(!email.match(regex)){
+            document.getElementById("emailErr").innerText = "invalid email"
+            valid = false
+         }else if(password.length < 5){
+            document.getElementById("passwordErr").innerText = "password must have at least 5 characters"
+            valid = false
+         }else if(valid){
+            alert(`
+            Hey ${name} you have successfully registered
+            Username: ${name},
+            Email: ${email}
+            `)
+            this.reset()
+         }
+        })
+    </script>
+</body>
+</html>

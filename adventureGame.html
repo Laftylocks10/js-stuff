@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adventure Game</title>
+    <style>
+    </style>
+</head>
+<body>
+    <article>
+        <div>You find yourself lost in a deep dark forest. How will you get out?</div>
+        <div>TIP: Using actions makes you lose energy, you start at 100%, and die at 0%. Keep your thirst and hunger high. </div>
+        <div id="choices_container">
+            <label>Scramble for materials</label><input type="radio" name="action" value="scramble"> <br/>
+            <label>Cut down trees [Requires Axe]</label><input type="radio" name="action" value="cut"> <br/>
+            <label>Mine Rocks [Requires Pickaxe]</label><input type="radio" name="action" value="mine"> <br/>
+            <label>Check your Inventory</label><input type="radio" name="action" value="inventory"> <br/>
+            <label>Go Exploring</label><input type="radio" name="action" value="hunt"> <br/>
+            <label>Craft something</label><input type="radio" name="action" value="craft"> <br/>
+            <button onclick="act()" id="btn">Action</button>
+        </div>
+        <div id="result"></div>
+    </article>
+
+    <script>
+        inventory = [{item: "Weak Axe", quantity: 1, properties: {Durability: 1, Strength: [1, 2, 3], MaxDurability: 10}}]
+        result = document.getElementById("result")
+        non_stackables = ["Weak Axe", "Weak Pickaxe"]
+        cuts_wood = ["Weak Axe"]
+        mines_stone = ["Weak Pickaxe"]
+        raw_ores = [{item: "Limestone", quantity: [5, 7, 10], properties: {smelt: "Smooth Stone", rarity: [0, 2]}}, {item: "Copper Ore", quantity: [3, 5, 7], properties: {smelt: "Copper Ingot", rarity: [3, 4]}}, {item: "Iron Ore", quantity: [2, 3, 4], properties: {smelt: "Iron Ingot", rarity: [5, 9]}}, {item: "Gold Ore", quantity: [2, 3], properties: {smelt: "Gold Ingot", rarity: [10, 19]}}, {item: "Diamond Ore", quantity: [2], properties: {smelt: "Diamond", rarity: [20, 29]}}, {item: "Emerald Ore", quantity: [2], properties: {smelt: "Emerald", rarity: [30, 49]}}, {item: "Ruby Ore", quantity: [2], properties: {smelt: "Ruby", rarity: [50, 99]}}, {item: "Sapphire Ore", quantity: [1], properties: {smelt: "Sapphire", rarity: [100, 199]}}, {item: "Hellstone Ore", quantity: [1], properties: {smelt: "Hellstone", rarity: 200}}]
+        smelts = []
+        craftables = [
+            // Others
+            {
+                make: {item: "Wood Planks", quantity: 4}, 
+                recipe: [{item: "Wood Log", quantity: 1, properties: {smelt: "Charcoal"}}]
+            },
+            {
+                make: {item: "Stick", quantity: 6}, 
+                recipe: [{item: "Wood Planks", quantity: 1}]
+            },
+            // Axes
+            {
+                make: {item: "Weak Axe", quantity: 1, properties: {Durability: 3, Strength: [1, 2, 3], MaxDurability: 10}, }, 
+                recipe: [{item: "Stick", quantity: 1}, {item: "Pebble", quantity: 2}, {item: "Leaf", quantity: 1}]
+            },
+            // Pickaxes
+            {
+                make: {item: "Weak Pickaxe", quantity: 1, properties: {Durability: 3, Strength: 1, MaxDurability: 10}}, 
+                recipe: [{item: "Stick", quantity: 1}, {item: "Pebble", quantity: 2}, {item: "Leaf", quantity: 1}]
+            }]
+            craftables.recipe = craftables.map(el => el.recipe)
+            craftables.make = craftables.map(el => el.make)
+            craftables.make.item = craftables.map(el => el.make.item)
+        
+        function reset () {
+            document.getElementById("choices_container").innerHTML = `
+            <label>Scramble for materials</label><input type="radio" name="action" value="scramble"> <br/>
+            <label>Cut down trees [Requires Axe]</label><input type="radio" name="action" value="cut"> <br/>
+            <label>Mine Rocks [Requires Pickaxe]</label><input type="radio" name="action" value="mine"> <br/>
+            <label>Check your Inventory</label><input type="radio" name="action" value="inventory"> <br/>
+            <label>Go Exploring</label><input type="radio" name="action" value="hunt"> <br/>
+            <label>Craft something</label><input type="radio" name="action" value="craft"> <br/>
+            <button onclick="act()" id="btn">Action</button>
+            `
+            result.innerHTML = ""
+        }
+        function remove (item, quantity=1, properties=null, ignore=false) {
+            for (items in inventory) {
+                if (inventory[items].item == item && inventory[items].properties == properties) {
+                    inventory[items].quantity -= quantity
+                    if (inventory[items].quantity<=0) {
+                        if (inventory[items].quantity<0) {console.log("Possible Problem: User does not have this many items")}
+                        inventory.splice(items, 1)
+                    }
+                }
+            }
+        }
+        function add (item, quantity=1, properties=null) {
+            detected = false
+            for (items in inventory) {
+                if (inventory[items].item == item && inventory[items].properties == properties && !(non_stackables.includes(inventory[items].item))) {
+                    inventory[items].quantity += quantity
+                    detected = true
+                    break
+                }
+            } if (properties && !detected) {inventory.push({item, quantity, properties})} 
+            else if (!detected) {inventory.push({item, quantity})}
+        } 
+        function act () {
+            action = document.querySelector('input[name="action"]:checked').value
+            document.getElementById("choices_container").innerHTML = "<br/>"
+            result.innerHTML = ""
+            if (action == "scramble") {
+                random = Math.round(Math.random()*101) 
+                if (random <= 30) {pickup = "Stick"}
+                else if (random <= 60) {pickup = "Pebble"}
+                else if (random <= 90) {pickup = "Leaf"}
+                else {pickup = null}
+                if (pickup) {
+                    result.innerText = `You found a ${pickup}. `
+                    add(pickup)
+                } else {
+                    result.innerText = `You found nothing. `
+                } result.insertAdjacentHTML("beforeend", "<button onclick='reset()'>Okay</button>")
+            } else if (action== "cut") {
+                detected = []
+                for (items in inventory) {
+                    if (cuts_wood.includes(inventory[items].item)) {detected.push(inventory[items])}
+                } if (detected.length) {
+                    if (detected.length == 1) {
+                        cut(inventory.indexOf(detected[0]))
+                    } else {
+                        result.innerHTML = "<label>You have multiple axes, choose one to use.</label> <br/>"
+                        for (axe in detected) {
+                            result.innerHTML += `<label>${detected[axe].item} (${detected[axe].properties.Durability} durability)</label> <input type="radio" name="axe" value="${inventory.indexOf(detected[axe])}"/> <br/>`
+                        }
+                        result.innerHTML += `<button onclick="cut(document.querySelector('input[name=axe]:checked').value)">Cut</button> <button onclick="reset()">Back</button>`
+                    }
+                } else {result.innerHTML = "<label>You do not have an axe. Get an axe to cut a tree down, bozo. </label> <button onclick='reset()'>Okay</button>"}
+            } else if (action == "mine") {
+                detected = []
+                for (items in inventory) {
+                    if (mines_stone.includes(inventory[items].item)) {detected.push(inventory[items])}
+                } if (detected.length) {
+                    if (detected.length == 1) {
+                        mine(inventory.indexOf(detected[0]))
+                    } else {
+                        result.innerHTML = "<label>You have multiple pickaxes, choose one to use.</label> <br/>"
+                        for (pickaxe in detected) {
+                            result.innerHTML += `<label>${detected[pickaxe].item} (${detected[pickaxe].properties.Durability} durability)</label> <input type="radio" name="pickaxe" value="${inventory.indexOf(detected[pickaxe])}"/> <br/>`
+                        }
+                        result.innerHTML += `<button onclick="mine(document.querySelector('input[name=pickaxe]:checked').value)">Mine</button> <button onclick="reset()">Back</button>`
+                    }
+                } else {result.innerHTML = "<label>You do not have a pickaxe, get a pickaxe bozo. </label> <button onclick='reset()'>Okay</button>"}
+            } else if (action == "inventory") {
+                
+            } else if (action == "hunt") {
+                
+            } else if (action == "craft") {
+                cancraft = false
+                for (craftable in craftables) {
+                    recipe = craftables[craftable].recipe
+                    make = craftables[craftable].make
+                    detected = false
+                    for (ingredient in recipe) {for (items in inventory) {if (inventory[items].item == recipe[ingredient].item) {detected = true}}}
+                    addition = ""
+                    if (detected) {
+                        addition += `<label>${make.item}: `
+                        for (ingredient in recipe) {
+                            addition += `${! [1, 0].includes(recipe[ingredient].quantity) ? `x${recipe[ingredient].quantity}` : ''} ${recipe[ingredient].item}`
+                            cancraft = true
+                        }
+                        addition += `</label> <input type="radio" name="craft" value="${make.item}"/> <br/>`
+                        result.innerHTML += addition
+                    }
+                } 
+                result.innerHTML += (cancraft) ? '<button onclick="craft()">Craft</button> <button onclick="reset()">Back</button>' : '<label>You do not have the materials to craft anything. </label> <button onclick="reset()">Okay</button>'
+                
+            } 
+            } 
+        function cut (num) {
+            axe = inventory.filter(el => el == inventory[num])[0]
+            wood_get = (axe.properties.Strength)[Math.round(Math.random()*(axe.properties.Strength.length-1))]
+            inventory.filter(el => el == axe)[0].properties.Durability -= 1
+            result.innerHTML = `<label>You cut down some trees and got ${(wood_get==1) ? 'a single Log' : [String(wood_get), ' Logs'].join("")} ${(axe.properties.Durability<=0) ? ", but your axe broke!" : ". "}</label> <button onclick="reset()">Okay</button>`
+            if (axe.properties.Durability <= 0) {remove(axe.item, 1, axe.properties)}
+            add("Wood Log", wood_get, {smelt: "Charcoal"})
+        }
+        function mine (num) {
+            pick = inventory.filter(el => el == inventory[num])[0]
+            inventory.filter(el => el == pick)[0].properties.Durability -= 1
+            ore = raw_ores.filter(el => el.properties.rarity[0] <= pick.properties.Strength)
+            ore.rarity = ore.map(el => el.properties.rarity)
+            ore.chance = Math.round(Math.random()*(pick.properties.Strength))
+            ore.getting = ore[ore.rarity.indexOf(ore.rarity.filter(el => el[0] <= ore.chance && el[1] >= ore.chance)[0])]
+            quantity = ore.getting.quantity[Math.floor(Math.random()*ore.getting.quantity.length)]
+            result.innerHTML = `You found ${(quantity == 1) ? 'a piece' : [quantity, ' pieces'].join("")} of ${ore.getting.item}${(pick.properties.Durability<=0) ? ", but your pickaxe broke!" : "."} <button onclick="reset()">Okay</button>`
+            if (pick.properties.Durability <= 0) {remove(pick.item, 1, pick.properties)}
+            add(ore.getting.item, ore.getting.quantity[Math.floor(Math.random()*ore.getting.quantity.length)], {smelt: ore.getting.properties.smelt})
+        }
+        function craft () {
+            option = document.querySelector('input[name="craft"]:checked').value
+            crafting = craftables[craftables.make.item.indexOf(option)]
+            result.innerHTML = ""
+            haveitems = []
+            for (ingredient in recipe) {
+                haveitems.push(false)
+                for (item in inventory) {if (crafting.recipe.item == inventory[item].item && crafting.recipe.quantity <= inventory[item].quantity) {haveitems[ingredient] = true}}
+            }
+            if (haveitems.includes(false)) {result.innerHTML = 'You do not have enough materials to craft this item. <button onclick="reset()">Okay</button>'}
+            else {
+                for (ingredient in crafting.recipe) {remove(crafting.recipe[0].item, crafting.recipe[0].quantity, crafting.recipe[0].properties)}  
+                add(crafting.make.item, crafting.make.quantity, crafting.make.properties)
+                result.innerHTML = `You made ${(crafting.make.quantity != 1) ? ('x' + String(crafting.make.quantity)) : 'a'} ${crafting.make.item}. <button onclick="reset()">Okay</button>`
+            }
+        }
+    </script>
+</body>
+</html>
